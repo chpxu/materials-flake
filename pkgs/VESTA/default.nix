@@ -27,6 +27,9 @@ in
     inherit pname src;
     version = "gtk3-x86_64";
     buildInputs = [gtk3 cairo libcxx];
+    # nativeBuildInputs = [
+    #   autoPatchelfHook
+    # ];
     unpackPhase = ''
       tar -xjf $src
     '';
@@ -37,13 +40,16 @@ in
       # and all the other files needed, so we don't want
       # to lose any of them
       cp -r "${pname}-${version}"/* "$out/share/$pname"
-      ln -s "$out/share/$pname" "$out/bin/$pname"    '';
-    postInstall = ''
+      ln -s "$out/share/$pname/$pname" "$out/bin/$pname"
+      #install -m755 -D VESTA $out/bin/VESTA
       mkdir -p $out/share/applications
       mkdir -p $out/share/icons
-      cp ${desktopEntry}/share/applications/${pname}.desktop $out/share/applications/${pname}.desktop
-      ln -s $out/share/$pname/logo@2x.png  $out/share/icons
+
+      install -m 444 -D ${desktopEntry}/share/applications/${pname}.desktop $out/share/applications/${pname}.desktop
+      ln -s $out/share/$pname/img/logo@2x.png  $out/share/icons
+
     '';
+
     meta = {
       description = "VESTA";
       homepage = "https://jp-minerals.org/vesta/en/";
