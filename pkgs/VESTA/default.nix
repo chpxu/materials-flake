@@ -1,10 +1,15 @@
 {
+  inputs,
   pkgs,
   lib,
   fetchurl ? pkgs.fetchurl,
   gtk3 ? pkgs.gtk3,
+  gtk2 ? pkgs.gtk2,
   cairo ? pkgs.cairomm,
   libcxx ? pkgs.libcxx,
+  autoPatchelfHook,
+  pkg-config,
+  ...
 }: let
   url = "https://jp-minerals.org/vesta/archives/testing/VESTA-gtk3-x86_64.tar.bz2";
   pname = "VESTA";
@@ -22,14 +27,15 @@
     comment = "VESTA is a 3D visualization program for structural models, volumetric data such as electron/nuclear densities, and crystal morphologies.";
     type = "Application";
   };
-in
-  pkgs.stdenv.mkDerivation rec {
+  vestaDeriv = pkgs.stdenv.mkDerivation rec {
     inherit pname src;
     version = "gtk3-x86_64";
-    buildInputs = [gtk3 cairo libcxx];
+    buildInputs = [gtk3 gtk2 cairo libcxx] ++ (with pkgs; [libGLU curl webkitgtk_4_1 libxxf86misc libxkbfile libxxf86dga xorg.libXtst xorg.libX11 libxkbcommon]);
     # nativeBuildInputs = [
     #   autoPatchelfHook
+    #   pkg-config
     # ];
+
     unpackPhase = ''
       tar -xjf $src
     '';
@@ -47,8 +53,26 @@ in
 
       install -m 444 -D ${desktopEntry}/share/applications/${pname}.desktop $out/share/applications/${pname}.desktop
       ln -s $out/share/$pname/img/logo@2x.png  $out/share/icons
-
     '';
+  };
+in
+  pkgs.buildFHSEnv {
+    name = pname;
+    targetPkgs = pkgs:
+      with pkgs;
+        [
+          gtk3
+          cairo
+          libcxx
+          libGL
+          libGLU
+          libdrm
+          libxkbcommon
+          libx11
+          fontconfig
+        ]
+        ++ [vestaDeriv];
+    runScript = "VESTA";
 
     meta = {
       description = "VESTA";

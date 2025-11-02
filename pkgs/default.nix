@@ -19,7 +19,7 @@
     };
     overlayAttrs = config.packages;
     packages = {
-      VESTA = pkgs.callPackage ./VESTA {inherit pkgs;};
+      VESTA = pkgs.callPackage ./VESTA {inherit inputs pkgs;};
     };
   };
 }
