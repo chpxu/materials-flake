@@ -1,6 +1,7 @@
 {
   inputs,
   pkgs,
+  pkgs25,
   lib,
   fetchurl ? pkgs.fetchurl,
   gtk3 ? pkgs.gtk3,
@@ -30,11 +31,15 @@
   vestaDeriv = pkgs.stdenv.mkDerivation rec {
     inherit pname src;
     version = "gtk3-x86_64";
-    buildInputs = [gtk3 gtk2 cairo libcxx] ++ (with pkgs; [libGLU curl webkitgtk_4_1 libxxf86misc libxkbfile libxxf86dga xorg.libXtst xorg.libX11 libxkbcommon]);
-    # nativeBuildInputs = [
-    #   autoPatchelfHook
-    #   pkg-config
-    # ];
+    buildInputs = [gtk3 gtk2 cairo libcxx] ++ (with pkgs; [libGLU curl]);
+    nativeBuildInputs = [
+      pkgs.xorg.libXtst
+      pkgs.xorg.libXxf86vm
+      pkgs.javaPackages.compiler.openjdk11-bootstrap
+      autoPatchelfHook
+      pkg-config
+      pkgs25.webkitgtk_4_0
+    ];
 
     unpackPhase = ''
       tar -xjf $src
@@ -47,6 +52,7 @@
       # to lose any of them
       cp -r "${pname}-${version}"/* "$out/share/$pname"
       ln -s "$out/share/$pname/$pname" "$out/bin/$pname"
+      ln -s "$out/share/$pname/$pname-gui" "$out/bin/$pname-gui"
       #install -m755 -D VESTA $out/bin/VESTA
       mkdir -p $out/share/applications
       mkdir -p $out/share/icons
@@ -59,19 +65,13 @@ in
   pkgs.buildFHSEnv {
     name = pname;
     targetPkgs = pkgs:
-      with pkgs;
-        [
-          gtk3
-          cairo
-          libcxx
-          libGL
-          libGLU
-          libdrm
-          libxkbcommon
-          libx11
-          fontconfig
-        ]
-        ++ [vestaDeriv];
+      with pkgs; [
+        vestaDeriv
+        gtk3
+        gtk2
+        cairo
+        libcxx
+      ];
     runScript = "VESTA";
 
     meta = {
