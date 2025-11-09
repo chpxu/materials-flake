@@ -25,6 +25,7 @@
     overlayAttrs = config.packages;
     packages = {
       VESTA = pkgs.callPackage ./VESTA {inherit inputs pkgs pkgs25;};
+      xcrysden = pkgs.callPackage ./xcrysden {inherit pkgs;};
     };
   };
 }

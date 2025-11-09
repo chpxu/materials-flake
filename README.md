@@ -1,2 +1,11 @@
 # materials-flake
-A nix flake consisting of various materials modelling programs. 
+A nix flake consisting of various materials modelling programs.
+
+## Packages
+
+
+| Package                                                     | Description                                                                                            |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [`VESTA`](./pkgs/VESTA)                           | VESTA pre-compiled binary                                                   |
+| [`XCrySDen`](./pkgs/xcrysden)                           | XCrySDen 1.6.2, manually compiled from source                                                   |
+
