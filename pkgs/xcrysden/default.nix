@@ -44,6 +44,11 @@ in
         pkgs.libGLU
         pkgs.libxmu
       ];
+    shellHook = ''
+      export NIX_CFLAGS_COMPILE="-isystem ${uhal}/local/include/"$NIX_CFLAGS_COMPILE
+      export CMAKE_INCLUDE_PATH="${uhal}/local/include/":$CMAKE_INCLUDE_PATH
+    '';
+
     unpackPhase = ''
       arr=($srcs)
        tar -xvf ''${arr[0]}
